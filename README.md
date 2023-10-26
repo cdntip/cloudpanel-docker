@@ -5,7 +5,8 @@
 ```bash
 # centos 
 yum install -y wget curl sudo git
-# debian/ubuntu 
+# debian/ubuntu
+apt update -y
 apt install -y wget curl sudo git
 ```
 
@@ -15,8 +16,8 @@ apt install -y wget curl sudo git
 curl -fsSL https://get.docker.com -o get-docker.sh && sh get-docker.sh
 
 # 安装 docker-compose
-curl -L "https://github.com/docker/compose/releases/download/v2.0.1/docker-compose-linux-$(uname -m)" -o /usr/local/bin/docker-compose
-
+curl -L "https://github.com/docker/compose/releases/download/v2.23.0/docker-compose-linux-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
 rm -f `which dc`
 ln -s /usr/local/bin/docker-compose /usr/bin/dc
 ```
@@ -28,8 +29,7 @@ dc up -d
 ```
 查看管理员账号
 ```bash
-docker logs cloudpanel-api | grep Password
-# 账号默认为: admin
+docker logs cloudpanel-api
 ```
 添加aws镜像
 ```bash
@@ -38,6 +38,10 @@ docker exec -it cloudpanel-api /bin/bash
 
 # 执行 
 python manage.py aws_update_images
+
+# 额外添加管理员
+python manage.py createsuperuser --username cdntip --email cdntip@admin.com
+
 ```
 在浏览器输入 ip+28080 端口即可打开
 一些命令
