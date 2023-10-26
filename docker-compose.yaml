@@ -1,0 +1,67 @@
+version: "3"
+
+networks:
+  cdntip:
+    ipam:
+      driver: default
+      config:
+      - subnet: '177.2.0.0/24'
+        
+# 设置mysql，redis持久化保存
+volumes:
+    mysql:
+    redis:
+  
+services:
+    web:
+        image: cdntip/cloudpanel:web
+        container_name: cloudpanel-web
+        restart: always
+        ports:
+            - '28080:8080'
+        depends_on:
+            - api
+        command: [ 'nginx-debug', '-g', 'daemon off;' ]
+        networks:
+            cdntip:
+                ipv4_address: 177.2.0.11
+
+    api:
+        image: cdntip/cloudpanel:api
+        container_name: cloudpanel-api
+        restart: always
+        depends_on:
+            - mysql
+            - redis
+        volumes:
+          - ./.env:/home/python/panel/.env
+        links:
+            - mysql
+            - redis
+        networks:
+            cdntip:
+                ipv4_address: 177.2.0.12
+
+    mysql:
+        image: mysql:8.1     
+        container_name: cloudpanel-mysql
+        command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+        restart: always
+        environment:
+            MYSQL_DATABASE: 'cloudpanel'
+            MYSQL_ROOT_PASSWORD: 'cloudpanel'
+        volumes:
+            - mysql:/var/lib/mysql
+        networks:
+            cdntip:
+                ipv4_address: 177.2.0.13
+
+    redis:
+        image: redis:6.0.6
+        container_name: cloudpanel-redis # 容器名
+        restart: always
+        volumes:
+            - redis:/data
+        networks:
+            cdntip:
+                ipv4_address: 177.2.0.14
