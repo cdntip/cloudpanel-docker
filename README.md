@@ -24,12 +24,17 @@ ln -s /usr/local/bin/docker-compose /usr/bin/dc
 下载程序
 ```bash
 git clone https://github.com/cdntip/cloudpanel-docker.git
-cd cloudpanel-docker 
+cd cloudpanel-docker
+dc up mysql -d
+# 等待mysql启动之后， 再执行下面的命令
 dc up -d
 ```
 查看管理员账号
 ```bash
 docker logs cloudpanel-api
+
+如果显示 Can't connect to MySQL server on '177.2.0.13' ([Errno 111] Connection refused) 之类的，  执行一下 dc restart  再重新查看即可
+
 ```
 添加aws镜像
 ```bash
